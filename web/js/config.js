@@ -3,7 +3,7 @@
 $(function () {
     var self = this;
 
-    this.init = function() {
+    this.init = function () {
         $("#form-expName").hide();
         $("#form-config").hide();
         $("#form-groupName-add").hide();
@@ -112,16 +112,18 @@ $(function () {
             requestExperimentName.done(function (responseExperimentName) {
                 $("#expName").empty();
                 $("#expName").html(new Option("-- Bitte auswählen --", 1));
+
+                var sortedExperiments = responseExperimentName.Items.sort(function (a, b) {
+                    return a.expNameId - b.expNameId;
+                });
                 for (var i = 0; i < responseExperiment.Count; i++) {
-                    if (responseExperiment.Items[i].expNameId === responseExperimentName.Items[i].expNameId) {
-                        $("#expName").append('<option data-expNameId="' + responseExperimentName.Items[i].expNameId + '" data-expName="' + responseExperimentName.Items[i].expName + '" data-expConfigId="' + responseExperiment.Items[i].configId + '">' + responseExperimentName.Items[i].expName + '</option>');
-                    }
+                    $("#expName").append('<option data-expNameId="' + responseExperimentName.Items[i].expNameId + '" data-expName="' + responseExperimentName.Items[i].expName + '">' + sortedExperiments[responseExperiment.Items[i].expNameId - 1].expName + '</option>');
                 }
             });
         });
     };
 
-    this.loadConfig = function(id) {
+    this.loadConfig = function (id) {
         var configId = $(id).find('option:selected')[0].id;
 
         var requestConfig = jQuery.ajax({

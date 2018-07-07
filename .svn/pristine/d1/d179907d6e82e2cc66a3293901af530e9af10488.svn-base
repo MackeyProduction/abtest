@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Tagesübersicht
+            <small>00:00-23:59 Uhr</small>
+        </h2>
+    </div>
+
+    {{ include('reportBox.html.twig') }}
+{% endblock %}

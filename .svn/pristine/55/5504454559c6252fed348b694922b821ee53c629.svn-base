@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Jahresübersicht</h2>
+    </div>
+
+    {{ include('reportBox.html.twig') }}
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Tracking</h2>
+    </div>
+
+    <section>
+        <div class="well well-lg">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="startDate">Startdatum</label>
+                            <div class="col-md-10">
+                                <input type="date" class="form-control" id="startDate" name="startDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="startTime">Uhrzeit</label>
+                            <div class="col-md-10">
+                                <input type="time" class="form-control" id="startTime" name="startTime">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="endDate">Enddatum</label>
+                            <div class="col-md-10">
+                                <input type="date" class="form-control" id="endDate" name="endDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2" for="endTime">Uhrzeit</label>
+                            <div class="col-md-10">
+                                <input type="time" class="form-control" id="endTime" name="endTime">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="form-group">
+            <label for="tracking-list">Tracking:</label>
+            <select multiple class="form-control" id="tracking-list" style="min-height: 150px;">
+            </select>
+        </div>
+    </section>
+
+    <section id="clicksViews">
+        <div class="page-header">
+            <h2>Clicks & Views (Variant #A vs. Variant #B)</h2>
+        </div>
+
+        <div class="alert alert-success" id="winner">
+            <strong>???</strong>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-md-lg-12">
+                <div class="line-container">
+                    <canvas id="ctra" width="400" height="400"></canvas>
+                </div>
+
+                <p>
+                    <strong>Click-Through-Rate:</strong> <span id="click-through-rate1">???</span>
+                </p>
+
+                <table class="table table-striped" id="table0">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>clicks</th>
+                        <th>views</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 col-md-lg-12">
+                <div class="line-container">
+                    <canvas id="ctrb" width="400" height="400"></canvas>
+                </div>
+
+                <p>
+                    <strong>Click-Through-Rate:</strong> <span id="click-through-rate2">???</span>
+                </p>
+
+                <table class="table table-striped" id="table1">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>clicks</th>
+                        <th>views</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        var date = new Date();
+        var configId, abChart, request, startDate, endDate, dateDiff, interval;
+
+        $(document).ready(function () {
+            $("#winner").hide();
+            $("#clicksViews").hide();
+
+            var formattedDate = date.getFullYear() + "-" + ((date.getMonth() >= 10) ? parseInt(date.getMonth() + 1) : "0" + parseInt(date.getMonth()+1)) + "-" + ((date.getDate() >= 10) ? date.getDate() : "0" + date.getDate());
+            var formattedTime = ((date.getHours() >= 10) ? date.getHours() : "0" + date.getHours()) + ":" + ((date.getMinutes() >= 10) ? date.getMinutes() : "0" + date.getMinutes()) + ":" + ((date.getSeconds() >= 10) ? date.getSeconds() : "0" + date.getSeconds());
+            $("#startDate").val(formattedDate);
+            $("#endDate").val(formattedDate);
+            $("#startTime").val(formattedTime);
+            $("#endTime").val(formattedTime);
+        });
+
+        $("#startDate").on('change', function () {
+            loadTrackingList();
+        });
+
+        $("#endDate").on('change', function () {
+            loadTrackingList();
+        });
+
+        $("#startTime").on('change', function () {
+            loadTrackingList();
+        });
+
+        $("#endTime").on('change', function () {
+            loadTrackingList();
+        });
+
+        $("#tracking-list").on('change', function () {
+            $("#clicksViews").fadeIn(500);
+
+            configId = $("#tracking-list option:selected")[0].id;
+            abChart = new ABChart(configId);
+            request = abChart.init();
+            loadWinner();
+
+            request.done(function () {
+                startDate = $("#tracking-list option:selected").attr("data-startdate");
+                endDate = $("#tracking-list option:selected").attr("data-enddate");
+                dateDiff = calculateDateDiff(60);
+
+                if (dateDiff <= 24) {
+                    interval = 30;
+                } else if (dateDiff > 24 && dateDiff < 168) {
+                    interval = 60;
+                } else {
+                    interval = 1440;
+                }
+
+                dateDiff = calculateDateDiff(interval);
+                abChart.loadLineCharts(parseInt(interval), parseInt(dateDiff));
+            });
+        });
+
+        function calculateDateDiff(interval) {
+            return (new Date(endDate) - new Date(startDate)) / (1000 * 60 * interval);
+        }
+
+        function loadTrackingList() {
+            var trackingListRequest = jQuery.ajax({
+                method: "GET",
+                url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/config/get/query/date/?startDate=" + $("#startDate").val() + " " + $("#startTime").val() + "&endDate=" + $("#endDate").val() + " " + $("#endTime").val(),
+                dataType: "json"
+            });
+
+            trackingListRequest.done(function (trackingListResponse) {
+                $("#tracking-list").find('option').remove();
+                for (var i = 0; i < trackingListResponse.Count; i++) {
+                    $("#tracking-list")
+                        .append($('<option>')
+                            .append("configId: " + trackingListResponse.Items[i].configId + "; Startdatum: " + trackingListResponse.Items[i].startDate + "; Enddatum: " + trackingListResponse.Items[i].endDate)
+                            .attr("id", trackingListResponse.Items[i].configId)
+                            .attr("data-startdate", trackingListResponse.Items[i].startDate)
+                            .attr("data-enddate", trackingListResponse.Items[i].endDate)
+                            .attr("data-contentId1", trackingListResponse.Items[i].contentId1)
+                            .attr("data-contentId2", trackingListResponse.Items[i].contentId2)
+                        )
+                    ;
+                }
+            });
+        }
+
+        function loadWinner() {
+            var trackingWinner = jQuery.ajax({
+                method: "GET",
+                url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/config/get/compare/?configId=" + configId,
+                dataType: "json"
+            });
+
+            trackingWinner.done(function (trackingWinnerResponse) {
+                var variant = "";
+
+                if (trackingWinnerResponse == $("#tracking-list option:selected").attr("data-contentId1")) {
+                    variant = "A";
+                } else {
+                    variant = "B";
+                }
+
+                $("#winner").html("<strong>Es hat Variante " + variant + " gewonnen.");
+                $("#winner").fadeIn(500);
+            });
+        }
+    </script>
+{% endblock %}

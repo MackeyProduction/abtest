@@ -1,0 +1,171 @@
+"use strict";
+
+$(function () {
+    var self = this;
+
+    this.init = function() {
+        $("#form-expName").hide();
+        $("#form-config").hide();
+        $("#form-groupName-add").hide();
+        $("#form-name-add").hide();
+
+        self.events();
+    };
+
+    this.events = function () {
+        $("#popover").popover({
+            title: "Prozentuale Verteilung",
+            content: "Bei der prozentualen Verteilung wird festgelegt, wie oft der Teaser vergleichsweise zum anderen Teaser ausgespielt werden soll. <br><br><strong>Beispiel:</strong><br>Es kann beispielsweise als Kriterium für Variante A eine Ausspielungsrate von 70% und bei Variante B 30% festgelegt werden. Bei der Ausspielung würde in diesem Fall Variante A häufiger ausgespielt werden als Variante B, da die erste Variante höher gewichtet wurde.",
+            viewport: "#popover",
+            html: true,
+            placement: "left"
+        });
+
+        self.buttonEvents();
+        self.selectEvents();
+    };
+
+    this.buttonEvents = function () {
+        $("#btnAddGroupName").on('click', function () {
+            $("#expGroupName-add").attr("disabled", false);
+            $("#btnSubmitGroupName").attr("disabled", false);
+            $("#btnCancelGroupName").attr("disabled", false);
+            $("#expName-add").attr("disabled", false);
+            $("#btnSubmitName").attr("disabled", false);
+            $("#btnCancelName").attr("disabled", false);
+
+            $("#form-expName").hide();
+            $("#form-config").hide();
+            $("#form-name-add").hide();
+
+            $("#form-groupName").hide();
+            $("#form-groupName-add").fadeIn(500);
+        });
+
+        $("#btnAddName").on('click', function () {
+            $("#form-config").hide();
+            $("#form-groupName-add").hide();
+
+            $("#form-name").hide();
+            $("#form-name-add").fadeIn(500);
+        });
+
+        $("#btnSubmitGroupName").on('click', function () {
+            $("#expGroupName-add").attr("disabled", "true");
+            $("#btnSubmitGroupName").attr("disabled", "true");
+            $("#btnCancelGroupName").attr("disabled", "true");
+
+            $("#form-expName").fadeIn(500);
+            $("#form-name").hide();
+            $("#form-name-add").fadeIn(500);
+        });
+
+        $("#btnCancelGroupName").on('click', function () {
+            $("#form-groupName-add").hide();
+            $("#form-groupName").fadeIn(500);
+        });
+
+        $("#btnSubmitName").on('click', function () {
+            $("#expName-add").attr("disabled", "true");
+            $("#btnSubmitName").attr("disabled", "true");
+            $("#btnCancelName").attr("disabled", "true");
+
+            $("#form-config").fadeIn(500);
+            self.loadConfig("#configs");
+        });
+
+        $("#btnTracking").on('click', function () {
+            $("#configId").val($("#configs").find('option:selected')[0].id);
+        });
+    };
+
+    this.selectEvents = function () {
+        $("#expGroupName").on('change', function () {
+            $("#form-expName").fadeIn(500);
+            self.loadExperiments(this);
+        });
+
+        $("#expName").on('change', function () {
+            $("#form-config").fadeIn(500);
+            self.loadConfig("#configs");
+        });
+
+        $("#configs").on('change', function () {
+            self.loadConfig(this);
+        });
+    };
+
+    this.loadExperiments = function (id) {
+        var groupNameId = $(id).find('option:selected').attr("data-expGroupNameId");
+
+        var requestExperiment = jQuery.ajax({
+            method: "GET",
+            url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/experiment/get/?expGroupNameId=" + groupNameId,
+            dataType: "json"
+        });
+
+        requestExperiment.done(function (responseExperiment) {
+            $("#expName").html(new Option("-- Bitte auswählen --", 1));
+
+            var requestExperimentName = jQuery.ajax({
+                method: "GET",
+                url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/experiment/get/name/",
+                dataType: "json"
+            });
+
+            requestExperimentName.done(function (responseExperimentName) {
+                for (var i = 0; i < responseExperiment.Count; i++) {
+                    if (responseExperiment.Items[i].expNameId === responseExperimentName.Items[i].expNameId) {
+                        $("#expName").append('<option data-expNameId="' + responseExperimentName.Items[i].expNameId + '" data-expName="' + responseExperimentName.Items[i].expName + '" data-expConfigId="' + responseExperiment.Items[i].configId + '">' + responseExperimentName.Items[i].expName + '</option>');
+                    }
+                }
+            });
+        });
+    };
+
+    this.loadConfig = function(id) {
+        var configId = $(id).find('option:selected')[0].id;
+
+        var requestConfig = jQuery.ajax({
+            method: "GET",
+            url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/config/get/query/" + configId,
+            dataType: "json"
+        });
+
+        requestConfig.done(function (responseConfig) {
+            $("#startConfig").val(responseConfig['config'][0].startDate);
+            $("#endConfig").val(responseConfig['config'][0].endDate);
+            $("#showRateInPercentVariantA").val(responseConfig['config'][0].showRateInPercent1);
+            $("#showRateInPercentVariantB").val(responseConfig['config'][0].showRateInPercent2);
+
+            if (new Date(responseConfig['config'][0].endDate) < new Date()) {
+                $("#panel-output-delay").attr("class", "panel panel-danger");
+                $("#btnTracking")[0].disabled = true;
+            } else {
+                $("#panel-output-delay").attr("class", "panel panel-success");
+                $("#btnTracking")[0].disabled = false;
+            }
+
+            var data = [responseConfig['config'][0].contentId1, responseConfig['config'][0].contentId2];
+            var counter = 0;
+
+            for (var i = 0; i < data.length; i++) {
+                var requestContent = jQuery.ajax({
+                    method: "GET",
+                    url: "https://v5ju1xklz1.execute-api.eu-central-1.amazonaws.com/prod/content/get/" + data[i],
+                    dataType: "json"
+                });
+
+                requestContent.done(function (responseContent) {
+                    $("#teaserConfigName" + counter).val(responseContent['content'][0].cName);
+                    $("#teaserConfigContent" + counter).val(responseContent['content'][0].cContent);
+                    $("#teaserConfigPortal" + counter).val(responseContent['content'][0].pName);
+                    $("#teaserConfigFormat" + counter).val(responseContent['content'][0].fName);
+                    counter++;
+                });
+            }
+        });
+    };
+
+    self.init();
+});

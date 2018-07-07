@@ -1,0 +1,72 @@
+{% if report is defined %}
+    {% if report.getByDateTime(startDate, endDate).getCollection.asArray() != null %}
+        {% for r in report.getByDateTime(startDate, endDate).getCollection().asArray() %}
+            <div class="alert alert-success" id="{{ r.configId }}">
+                <h4 class="reportBox__headline">Es hat Variante {{ variant[loop.index0] }} gewonnen. <a href="#collapse-{{ r.configId }}" data-toggle="collapse"><span class="glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowDown" id="chevron-{{ r.configId }}"></span></a></h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="reportBox__content">
+                            <strong>configId: </strong>{{ r.configId }}
+                            <span>contentId1: </span>{{ r.contentId1 }}
+                            <span>contentId2: </span>{{ r.contentId2 }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="reportBox__content">
+                            <span>Startdatum: </span>{{ r.startDate }}
+                            <span>Enddatum: </span>{{ r.endDate }}
+                        </p>
+                    </div>
+                </div>
+                <div class="collapse" id="collapse-{{ r.configId }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="reportBox__content">
+                                <span>contentId: </span> {{ content.getById(r.contentId1).contentId }}
+                                <span>cName: </span> {{ content.getById(r.contentId1).CName }}
+                                <span>cContent: </span> {{ content.getById(r.contentId1).CContent }}
+                                <span>fName: </span> {{ content.getById(r.contentId1).FName }}
+                                <span>fContent: </span> {{ content.getById(r.contentId1).FContent }}
+                                <span>pName: </span> {{ content.getById(r.contentId1).PName }}
+                                <span>clicks: </span> {{ tracking.getByConfigIdAndContentId(r.configId, r.contentId1).clicks }}
+                                <span>views: </span> {{ tracking.getByConfigIdAndContentId(r.configId, r.contentId1).views }}
+                                <span>Click-Through-Rate: </span> {{ tracking.getClickThroughRate(r.configId, r.contentId1) }}
+                                <span>showRateInPercent: {{ r.showRateInPercent1 }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="reportBox__content">
+                                <span>contentId: </span> {{ content.getById(r.contentId2).contentId }}
+                                <span>cName: </span> {{ content.getById(r.contentId2).CName }}
+                                <span>cContent: </span> {{ content.getById(r.contentId2).CContent }}
+                                <span>fName: </span> {{ content.getById(r.contentId2).FName }}
+                                <span>fContent: </span> {{ content.getById(r.contentId2).FContent }}
+                                <span>pName: </span> {{ content.getById(r.contentId2).PName }}
+                                <span>clicks: </span> {{ tracking.getByConfigIdAndContentId(r.configId, r.contentId2).clicks }}
+                                <span>views: </span> {{ tracking.getByConfigIdAndContentId(r.configId, r.contentId2).views }}
+                                <span>Click-Through-Rate: </span> {{ tracking.getClickThroughRate(r.configId, r.contentId2) }}
+                                <span>showRateInPercent: {{ r.showRateInPercent2 }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>
+            Es stehen keine Berichte für den gewählten Zeitraum zur Verfügung.
+        </p>
+    {% endif %}
+{% endif %}
+
+<script>
+    $('span[class*=reportBox__headline__span]').each(function (k, v) {
+        $("#" + v.id).on('click', function () {
+            if (v.className === "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowDown") {
+                $("#" + v.id).attr("class", "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowUp");
+            } else {
+                $("#" + v.id).attr("class", "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowDown");
+            }
+        });
+    })
+</script>

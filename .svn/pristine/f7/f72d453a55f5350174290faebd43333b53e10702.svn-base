@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Welcome!{% endblock %}</title>
+
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block stylesheets %}{% endblock %}
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/bootstrap-3.3.7/dist/css/bootstrap.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+    <script type="text/javascript" src="{{ asset('js/jquery-3.1.0.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('css/bootstrap-3.3.7/dist/js/bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/script.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/document.ready.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/teaser.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/tracking.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/ABChart.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="border-radius: 0; margin-bottom: 0; border: 0;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{{ path('dashboard') }}" class="navbar-brand"><img src="https://www.cbc.de/images/logos/CBC-Logo-120.svg?p836fl" alt="cbc-logo"></a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <div class="navbar-center">
+                    <span class="navbar-headline">A/B-Test Admin-Tool</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2" style="padding: 0; margin: 0; position: sticky; top: 50px;">
+            <div class="sidebar-sticky" id="{{ activeLink }}">
+                <ul class="sidebar-nav">
+                    <li class="nav-item"><a href="{{ path('dashboard') }}" id="home" class="nav-link"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Dashboard</a></li>
+                    <li class="nav-item"><a href="{{ path('config') }}" id="config" class="nav-link"><span class="glyphicon glyphicon-wrench"></span> Konfiguration</a></li>
+                    <li class="nav-item"><a href="{{ path('content') }}" id="content" class="nav-link"><span class="glyphicon glyphicon-list-alt"></span> Inhalte</a></li>
+                    <li class="nav-item"><a href="{{ path('track') }}" id="track" class="nav-link"><span class="glyphicon glyphicon-signal"></span> Tracking</a></li>
+                </ul>
+                <h6 class="sidebar-heading">
+                    <span>Berichte</span>
+                </h6>
+                <ul class="sidebar-nav">
+                    <li class="nav-item"><a href="{{ path('daily-report') }}" id="daily-report" class="nav-link"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Tagesübersicht</a></li>
+                    <li class="nav-item"><a href="{{ path('monthly-report') }}" id="monthly-report" class="nav-link"><span class="glyphicon glyphicon-calendar"></span> Monatsübersicht</a></li>
+                    <li class="nav-item"><a href="{{ path('yearly-report') }}" id="yearly-report" class="nav-link"><span class="glyphicon glyphicon-calendar"></span> Jahresübersicht</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10">
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

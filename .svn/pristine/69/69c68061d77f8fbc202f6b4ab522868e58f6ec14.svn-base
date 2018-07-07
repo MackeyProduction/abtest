@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Dashboard</h2>
+    </div>
+
+    <section>
+        <div class="row">
+            <div class="col-md-4 col-md-lg-12">
+                <div class="doughnut-container">
+                    <canvas id="clicks" width="400" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4 col-md-lg-12">
+                <div class="doughnut-container">
+                    <canvas id="views" width="400" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4 col-md-lg-12">
+                <div class="doughnut-container">
+                    <canvas id="ctr" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="config-box">
+        <div class="form-group">
+            <div style="float: right;">
+                <a href="#modalContent" data-toggle="modal" data-target="#modalContent"><span class="glyphicon glyphicon-info-sign"></span></a>
+            </div>
+
+            <label for="configId">Konfiguration:</label>
+            <select class="form-control" id="configId">
+                <?php
+            /** @var \Application\Models\TeaserConfig $item */
+            foreach ($teaserConfigRepository->getAll()->asArray() as $item): ?>
+                <option id="<?php echo $item->getConfigId(); ?>">configId: <?php echo $item->getConfigId(); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <p>
+            <strong>configId:</strong> <span id="panel-configId">???</span><br>
+            <strong>contentId1:</strong> <span id="panel-contentId1">???</span><br>
+            <strong>contentId2:</strong> <span id="panel-contentId2">???</span><br>
+            <strong>Startdatum:</strong> <span id="panel-startDate">???</span><br>
+            <strong>Enddatum:</strong> <span id="panel-endDate">???</span>
+        </p>
+    </section>
+
+    <section>
+        <div class="page-header">
+            <h2>Clicks & Views (Variant #A vs. Variant #B)</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-md-lg-12">
+                <div class="line-container">
+                    <canvas id="ctra" width="400" height="400"></canvas>
+                </div>
+
+                <p>
+                    <strong>Click-Through-Rate:</strong> <span id="click-through-rate1">???</span>
+                </p>
+
+                <table class="table table-striped" id="table0">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>clicks</th>
+                        <th>views</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 col-md-lg-12">
+                <div class="line-container">
+                    <canvas id="ctrb" width="400" height="400"></canvas>
+                </div>
+
+                <p>
+                    <strong>Click-Through-Rate:</strong> <span id="click-through-rate2">???</span>
+                </p>
+
+                <table class="table table-striped" id="table1">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Startzeit</th>
+                        <th>Endzeit</th>
+                        <th>clicks</th>
+                        <th>views</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="modalContent" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Informationen zur Konfiguration</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <strong>configId:</strong> <span id="contentModal-configId">???</span><br>
+                        <strong>Startdatum:</strong> <span id="contentModal-startDate">???</span><br>
+                        <strong>Enddatum:</strong> <span id="contentModal-endDate">???</span>
+                    </p>
+
+                    <div class="page-header">
+                        <h4>A/B-Test</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>contentId:</strong> <span id="contentModal-contentId0">???</span><br>
+                            <strong>cName:</strong> <span id="contentModal-cName0">???</span><br>
+                            <strong>cContent:</strong> <span id="contentModal-cContent0">???</span><br>
+                            <strong>fName:</strong> <span id="contentModal-fName0">???</span><br>
+                            <strong>fContent:</strong> <span id="contentModal-fContent0">???</span><br>
+                            <strong>pName:</strong> <span id="contentModal-pName0">???</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>contentId:</strong> <span id="contentModal-contentId1">???</span><br>
+                            <strong>cName:</strong> <span id="contentModal-cName1">???</span><br>
+                            <strong>cContent:</strong> <span id="contentModal-cContent1">???</span><br>
+                            <strong>fName:</strong> <span id="contentModal-fName1">???</span><br>
+                            <strong>fContent:</strong> <span id="contentModal-fContent1">???</span><br>
+                            <strong>pName:</strong> <span id="contentModal-pName1">???</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <script>
+        var configId, abChart, request;
+
+        $(document).ready(function () {
+            load();
+        });
+
+        $('#configId').on('change', function () {
+            load();
+        });
+
+        function load() {
+            configId = $("#configId :selected")[0].id;
+            abChart = new ABChart(configId);
+            request = abChart.init();
+
+            // load
+            request.done(function () {
+                abChart.loadConfigPanel();
+                abChart.loadConfigContentPanel();
+                loadDashboard(abChart);
+            });
+        }
+
+        function loadDashboard(abChart) {
+            abChart.loadPieCharts();
+            abChart.loadLineCharts(30, 7);
+        }
+    </script>
+{% endblock %}

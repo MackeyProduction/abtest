@@ -1,0 +1,73 @@
+<?php
+
+namespace AppBundle\Controller;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+
+class DefaultController extends Controller
+{
+    /**
+     * @Route("/", name="dashboard")
+     */
+    public function indexAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/index.html.twig');
+    }
+
+    /**
+     * @Route("/content", name="content")
+     */
+    public function contentAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/content.html.twig');
+    }
+
+    /**
+     * @Route("/config", name="config")
+     */
+    public function configAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/config.html.twig');
+    }
+
+    /**
+     * @Route("/track", name="track")
+     */
+    public function trackingAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/track.html.twig');
+    }
+
+    /**
+     * @Route("/daily-report", name="daily-report")
+     */
+    public function dailyReportAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/daily-report.html.twig');
+    }
+
+    /**
+     * @Route("/monthly-report", name="monthly-report")
+     */
+    public function monthlyReportAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/monthly-report.html.twig');
+    }
+
+    /**
+     * @Route("/yearly-report", name="yearly-report")
+     */
+    public function yearlyReportAction(Request $request)
+    {
+        // replace this example code with whatever you need
+        return $this->render('abtest/yearly-report.html.twig');
+    }
+}

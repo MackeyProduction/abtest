@@ -1,0 +1,377 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Konfiguration <a href="#modalConfig" data-toggle="modal" data-target="#modalConfig" title="Hinzufügen"><span class="glyphicon glyphicon-plus" style="float: right; color: #5cd655;"></span></a></h2>
+    </div>
+
+    <section>
+        <form method="post" action="{{ path('config') }}">
+            <p>
+                Bei dieser Option wird ein ausgewählter Teaser-Vergleich gestartet.
+            </p>
+
+            <div class="form-group">
+                <div id="form-groupName">
+                    <label for="expGroupName">Gruppenname:</label>
+                    <div class="input-group">
+                        <select class="form-control" id="expGroupName" name="expGroupName">
+                            {% for expGroup in expGroups %}
+                                <option data-expGroupName="{{ expGroup.name }}" data-expGroupNameId="{{ expGroup.id }}">{{ expGroup.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="btnAddGroupName" type="button"><span class="glyphicon glyphicon-plus" style="color: #5cd655;"></span></button>
+                        </span>
+                    </div>
+                </div>
+                <div id="form-groupName-add">
+                    <label for="expGroupName-add">Gruppenname:</label>
+                    <div class="input-group">
+                        <input name="expGroupName-add" id="expGroupName-add" type="text" class="form-control" placeholder="z.B. TVNow">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="btnSubmitGroupName" type="button"><span class="glyphicon glyphicon-ok" style="color: #5cd655;"></span></button>
+                            <button class="btn btn-default" id="btnCancelGroupName" type="button"><span class="glyphicon glyphicon-remove" style="color: #d61d1b;"></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="form-expName">
+                <div class="form-group">
+                    <div id="form-name">
+                        <label for="expName">Name des Experiments:</label>
+                        <div class="input-group">
+                            <select class="form-control" id="expName" name="expName">
+                                <option>???</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" id="btnAddName" type="button"><span class="glyphicon glyphicon-plus" style="color: #5cd655;"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="form-name-add">
+                        <label for="expName-add">Name des Experiments:</label>
+                        <div class="input-group">
+                            <input name="expName-add" id="expName-add" type="text" class="form-control" placeholder="z.B. kochbar-experiment">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" id="btnSubmitName" type="button"><span class="glyphicon glyphicon-ok" style="color: #5cd655;"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="form-config">
+                <div class="form-group">
+                    <div id="configList-all">
+                        <label for="configs">Konfiguration:</label>
+                        <select class="form-control" name="configId" id="configs">
+                            {% for c in config %}
+                                <option id="{{ c.configId }}">{{ c.configId }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Variante A
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="teaserConfigName0">Teasername</label>
+                                    <input type="text" class="form-control" id="teaserConfigName0" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigContent0">Teaser-Content</label>
+                                    <textarea class="form-control" rows="3" id="teaserConfigContent0" disabled></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigPortal0">Portal</label>
+                                    <input type="text" class="form-control" id="teaserConfigPortal0" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigFormat0">Format</label>
+                                    <input type="text" class="form-control" id="teaserConfigFormat0" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Variante B
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="teaserConfigName1">Teasername</label>
+                                    <input type="text" class="form-control" id="teaserConfigName1" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigContent1">Teaser-Content</label>
+                                    <textarea class="form-control" rows="3" id="teaserConfigContent1" disabled></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigPortal1">Portal</label>
+                                    <input type="text" class="form-control" id="teaserConfigPortal1" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="teaserConfigFormat1">Format</label>
+                                    <input type="text" class="form-control" id="teaserConfigFormat1" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-info" id="panel-show-rate-in-percent">
+                    <div class="panel-heading">
+                        Prozentuale Verteilung der Ausspielung
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="showRateInPercentVariantA">Variante A</label>
+                                    <div class="input-group">
+                                        <input id="showRateInPercentVariantA" type="text" class="form-control" disabled>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="showRateInPercentVariantB">Variante B</label>
+                                    <div class="input-group">
+                                        <input id="showRateInPercentVariantB" type="text" class="form-control" disabled>
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-info" id="panel-output-delay">
+                    <div class="panel-heading">
+                        Beginn und Ende der Ausspielung
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="startConfig">Beginn der Ausspielung</label>
+                                    <input id="startConfig" type="text" class="form-control" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="endConfig">Ende der Ausspielung</label>
+                                    <input id="endConfig" type="text" class="form-control" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-lg btn-success" id="btnTracking" style="width: 100%;">ABTest starten</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section id="addConfig">
+        <div class="modal fade" id="modalConfig" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Konfiguration zur Datenbank hinzufügen</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alertBox">
+                            <div class="alert alert-danger" id="errorMessage">
+                                <div id="errorOutput"></div>
+                            </div>
+
+                            <div class="alert alert-success" id="successMessage">
+                                <div id="successOutput"></div>
+                            </div>
+                        </div>
+
+                        <p>
+                            Bei dieser Option wird ein neuer Teaser-Vergleich zur Datenbank hinzugefügt.<br><br>
+                            <strong>Wichtig:</strong> Die Teaser werden bei diesem Schritt noch nicht ausgespielt. Um die Teaser auf der Seite auszuspielen, muss auf der Konfigurationsseite die entsprechende Konfiguration ausgewählt und bestätigt werden.
+                        </p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        Variante A
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label for="teaserNameA">Teasername</label>
+                                            <select class="form-control" id="teaserNameA">
+                                                {% for co in content %}
+                                                    <option id="{{ co.CName }}-a">{{ co.CName }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserContentA">Teaser-Content</label>
+                                            <textarea class="form-control" rows="3" id="teaserContentA" disabled></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserPortalA">Portal</label>
+                                            <input type="text" class="form-control" id="teaserPortalA" disabled>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserFormatA">Format</label>
+                                            <input type="text" class="form-control" id="teaserFormatA" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        Variante B
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label for="teaserNameB">Teasername</label>
+                                            <select class="form-control" id="teaserNameB">
+                                                {% for co in content %}
+                                                    <option id="{{ co.CName }}-b">{{ co.CName }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserContentB">Teaser-Content</label>
+                                            <textarea class="form-control" rows="3" id="teaserContentB" disabled></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserPortalB">Portal</label>
+                                            <input type="text" class="form-control" id="teaserPortalB" disabled>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="teaserFormatB">Format</label>
+                                            <input type="text" class="form-control" id="teaserFormatB" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-info" id="panel-show-rate-in-percent">
+                            <div class="panel-heading">
+                                Prozentuale Verteilung der Ausspielung <a href="#popover" style="float: right; clear: both;" id="popover" tabindex="0" role="button"><span class="glyphicon glyphicon-info-sign" style="float: right;"></span></a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="showRateInPercentVariantA-modal">Variante A</label>
+                                            <div class="input-group">
+                                                <input id="showRateInPercentVariantA-modal" type="text" class="form-control" placeholder="70">
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="showRateInPercentVariantB-modal">Variante B</label>
+                                            <div class="input-group">
+                                                <input id="showRateInPercentVariantB-modal" type="text" class="form-control" placeholder="30">
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Beginn und Ende der Ausspielung
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="start">Beginn der Ausspielung</label>
+                                            <input id="start" type="date" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="end">Ende der Ausspielung</label>
+                                            <input id="end" type="date" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Beginn-Uhrzeit</label>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="startHoursA">Stunden</label>
+                                                    <input name="startHoursA" id="startHoursA" type="number" class="form-control" placeholder="hh" min="0" max="23" maxlength="2">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="startMinutesA">Minuten</label>
+                                                    <input name="startMinutesA" id="startMinutesA" type="number" class="form-control" placeholder="mm" min="0" max="59" maxlength="2">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="startSecondsA">Sekunden</label>
+                                                    <input name="startSecondsA" id="startSecondsA" type="number" class="form-control" placeholder="ss" min="0" max="59" maxlength="2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>End-Uhrzeit</label>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="startHoursB">Stunden</label>
+                                                    <input name="startHoursB" id="startHoursB" type="number" class="form-control" placeholder="hh" min="0" max="23" maxlength="2">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="startMinutesB">Minuten</label>
+                                                    <input name="startMinutesB" id="startMinutesB" type="number" class="form-control" placeholder="mm" min="0" max="59" maxlength="2">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="startSecondsB">Sekunden</label>
+                                                    <input name="startSecondsB" id="startSecondsB" type="number" class="form-control" placeholder="ss" min="0" max="59" maxlength="2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" id="btnAddTeaserTracking">Konfiguration hinzufügen</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </section>
+
+    {% block javascripts %}
+        <script type="text/javascript" src="{{ asset('js/config.js') }}"></script>
+    {% endblock %}
+{% endblock %}

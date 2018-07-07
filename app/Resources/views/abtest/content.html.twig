@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Inhalte <a href="#modalContent" data-toggle="modal" data-target="#modalContent" title="Hinzufügen"><span class="glyphicon glyphicon-plus" style="float: right; color: #5cd655;"></span></a></h2>
+    </div>
+
+    <section class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Teasername</th>
+                <th>Teaser-Content</th>
+                <th>Portal</th>
+                <th>Format-Name</th>
+                <th>Format-Inhalt</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for co in content %}
+                <tr id="{{ co.contentId }}">
+                    <td id="col-teaserId-{{ co.contentId }}">{{ co.contentId }}</td>
+                    <td id="col-teaserName-{{ co.contentId }}">{{ co.CName }}</td>
+                    <td id="col-teaserContent-{{ co.contentId }}">{{ co.CContent }}</td>
+                    <td id="col-teaserPortal-{{ co.contentId }}">{{ co.PName }}</td>
+                    <td id="col-teaserFormatName-{{ co.contentId }}">{{ co.FName }}</td>
+                    <td id="col-teaserFormatContent-{{ co.contentId }}">{{ co.FContent }}</td>
+                    <td><a href="#{{ co.contentId }}"><span class="glyphicon glyphicon-pencil" data-toggle="tooltip" title="Bearbeiten"></span></a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <div class="modal fade" id="modalContent" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Konfiguration zur Datenbank hinzufügen</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alertBox">
+                            <div class="alert alert-danger" id="errorMessage">
+                                <div id="errorOutput"></div>
+                            </div>
+
+                            <div class="alert alert-success" id="successMessage">
+                                <div id="successOutput"></div>
+                            </div>
+                        </div>
+
+                        <p>
+                            Bei dieser Option wird ein neuer Teaser mit Inhalt erstellt.
+                        </p>
+
+                        <div class="form-group">
+                            <label for="teaserName">Teasername</label>
+                            <input type="text" id="teaserName" class="form-control" placeholder="z.B. kochbar-teaser">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="teaserContent">Teaser-Content</label>
+                            <textarea id="teaserContent" rows="3" class="form-control"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="portal">Portal</label>
+                            <select class="form-control" id="portal">
+                                {% for co in content %}
+                                    <option id="{{ co.PName }}">{{ co.PName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="format">Format</label>
+                            <select class="form-control" id="format">
+                                <option id="null">-- Bitte auswählen --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-lg btn-success" style="width: 100%;" id="btnAddTeaserContent">Teaser hinzufügen</button>
+                        <button class="btn btn-lg btn-primary" style="width: 100%; display: none;" id="btnEditTeaserContent">Änderungen speichern</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </section>
+    <input type="hidden" id="contentId" value="">
+
+    <script>
+        $("tr a").each(function (key, val) {
+            var id = (val.href).split("#")[1];
+            $(val).on("click", function () {
+                // change modal
+                $("#btnAddTeaserContent").hide();
+                $("#btnEditTeaserContent").show();
+
+                // add content
+                $("#contentId").val($("#col-teaserId-" + id).prop("innerHTML"));
+                $("#teaserName").val($("#col-teaserName-" + id).prop("innerHTML"));
+                $("#teaserContent").val($("#col-teaserContent-" + id).prop("innerHTML"));
+                $("#portal").val($("#col-teaserPortal-" + id).prop("innerHTML"));
+                $("#format").val($("#col-teaserFormatContent-" + id).prop("innerHTML"));
+
+                $("#modalContent").modal('show');
+            });
+        });
+
+        $("a[href*=modalContent]").on("click", function () {
+            // change modal
+            $("#btnAddTeaserContent").show();
+            $("#btnEditTeaserContent").hide();
+
+            // add content
+            $("#teaserName").val("");
+            $("#teaserContent").val("");
+        });
+    </script>
+{% endblock %}

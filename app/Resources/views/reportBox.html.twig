@@ -59,14 +59,6 @@
     {% endif %}
 {% endif %}
 
-<script>
-    $('span[class*=reportBox__headline__span]').each(function (k, v) {
-        $("#" + v.id).on('click', function () {
-            if (v.className === "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowDown") {
-                $("#" + v.id).attr("class", "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowUp");
-            } else {
-                $("#" + v.id).attr("class", "glyphicon glyphicon-chevron-right reportBox__headline__span reportBox__headline__span--arrowDown");
-            }
-        });
-    })
-</script>
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('js/reportBox.js') }}"></script>
+{% endblock %}

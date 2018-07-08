@@ -146,34 +146,8 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+{% endblock %}
 
-    <script>
-        var configId, abChart, request;
-
-        $(document).ready(function () {
-            load();
-        });
-
-        $('#configId').on('change', function () {
-            load();
-        });
-
-        function load() {
-            configId = $("#configId :selected")[0].id;
-            abChart = new ABChart(configId);
-            request = abChart.init();
-
-            // load
-            request.done(function () {
-                abChart.loadConfigPanel();
-                abChart.loadConfigContentPanel();
-                loadDashboard(abChart);
-            });
-        }
-
-        function loadDashboard(abChart) {
-            abChart.loadPieCharts();
-            abChart.loadLineCharts(30, 7);
-        }
-    </script>
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('js/dashboard.js') }}"></script>
 {% endblock %}

@@ -23,7 +23,7 @@
         "inquirer": "^0.5.1",
         "jquery": "^2.1.4",
         "onecolor": "^2.5.0",
-        "semver": "^3.0.1"
+        "semver": "^7.1.1"
     },
     "spm": {
         "main": "Chart.js"
